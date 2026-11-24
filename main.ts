@@ -8,14 +8,22 @@ import { dirname } from "node:path";
 
 const OUTPUT_PATH = "/output/entry.txt";
 
-// The commit message, verbatim. Friday 5pm, full confidence, zero fear.
+// The commit message, verbatim. Self-approved on a Friday, reviewed twice.
 const COMMIT_LINE =
-  "fix: deploy to prod Friday 5pm — rollback is a Monday problem, and Monday me hates Friday me";
+  "feat: self-approved my own PR and shipped it Friday — I reviewed it twice and I am very thorough";
 
 function main(): void {
   const length = [...COMMIT_LINE].length;
   if (length < 1 || length > 159) {
     throw new Error(`Commit line is ${length} characters; gate allows 1-159.`);
+  }
+  // Exact-length guard: the chosen TOP 1 line is exactly 96 characters.
+  if (length !== 96) {
+    throw new Error(`Commit line must be exactly 96 characters; got ${length}.`);
+  }
+  // Byte guard: 95 ASCII bytes + the em dash (3 UTF-8 bytes) = 98 bytes.
+  if (Buffer.byteLength(COMMIT_LINE, "utf8") !== 98) {
+    throw new Error("Commit line must be exactly 98 UTF-8 bytes.");
   }
   if (COMMIT_LINE.trim() === "") {
     throw new Error("Commit line must not be only white space.");
